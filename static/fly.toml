@@ -1,0 +1,56 @@
+# fly.toml file generated for test-pc2 on 2022-09-05T14:04:41-03:00
+
+app = "test-app"
+kill_signal = "SIGINT"
+kill_timeout = 5
+processes = []
+
+[build]
+  image = "nightscout/cgm-remote-monitor:latest"
+
+[env]
+  API_SECRET = ""
+  AUTH_DEFAULT_ROLES = "denied"
+  BG_HIGH = 200
+  BG_LOW = 55
+  BG_TARGET_BOTTOM = 80
+  BG_TARGET_TOP = 180
+  DISPLAY_UNITS = "mg/dl"
+  ENABLE = "careportal basal dbsize rawbg iob maker bridge cob bwp cage iage sage boluscalc pushover treatmentnotify mmconnect loop pump profile food openaps bage override speech cors googlehome"
+  INSECURE_USE_HTTP = true
+  MONGODB_URI = ""
+  NODE_ENV = "production"
+  SHOW_PLUGINS = "careportal dbsize sage"
+  THEME = "colors"
+  TIME_FORMAT = 24
+  TZ = "America/Buenos_Aires"
+
+[experimental]
+  allowed_public_ports = []
+  auto_rollback = true
+
+[[services]]
+  http_checks = []
+  internal_port = 1337
+  processes = ["app"]
+  protocol = "tcp"
+  script_checks = []
+  [services.concurrency]
+    hard_limit = 25
+    soft_limit = 20
+    type = "connections"
+
+  [[services.ports]]
+    force_https = true
+    handlers = ["http"]
+    port = 80
+
+  [[services.ports]]
+    handlers = ["tls", "http"]
+    port = 443
+
+  [[services.tcp_checks]]
+    grace_period = "1s"
+    interval = "15s"
+    restart_limit = 0
+    timeout = "2s"
