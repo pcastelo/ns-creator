@@ -26,6 +26,7 @@ def create():
     ns_password = request.form['ns_password']
     mongodb_url = request.form['mongodb_url']
 
+
     try:
         access_token = login(email, password)
     except LoginException as e:
@@ -68,15 +69,18 @@ def launchApp(access_token, username):
 
 def modifyTomlFile(mongodb_url, ns_password, username):
     # Modify environment variables from fly.toml
+    app.logger.info('Modifying toml file')
     data = toml.load("/tmp/base/fly.toml")
     data['env']['API_SECRET'] = ns_password
     data['env']['MONGODB_URI'] = mongodb_url
     userpath = '/tmp/{}/fly.toml'.format(username)
     # create a directory for the user
+    app.logger.info('Creating directory for user')
     os.makedirs(os.path.dirname(userpath), exist_ok=True)
     f = open(userpath, 'w')
     toml.dump(data, f)
     f.close()
+    app.logger.info('toml file modified')
 
 
 # Login to flyctl and validate the user and password and get the access token
@@ -84,10 +88,9 @@ def login(email, password):
     login_result = subprocess.getoutput('flyctl auth login --email {} --password {} --otp none'.format(email, password))
     # if error show in index.html error message else get acccess token
     app.logger.info('resultado: %s', login_result)
-    if ('Incorrect email and password' in login_result):
+    if 'Incorrect email and password' in login_result:
         app.logger.error('Incorrect Credentials')
         raise LoginException("Incorrect Credentials")
-        # return render_template('index.html', error='Incorrect credentials')
     else:
         access_token = subprocess.getoutput('flyctl auth token')
         os.system('flyctl auth logout')
@@ -95,4 +98,4 @@ def login(email, password):
 
 
 if __name__ == '__main__':
-    app.run(port=5001)
+    app.run(port=5000)
