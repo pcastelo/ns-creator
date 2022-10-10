@@ -5,10 +5,9 @@ import subprocess
 import toml
 
 from flask import Flask, render_template, request
-
+from app import app
 from exception.LoginException import LoginException
 
-app = Flask(__name__)
 logging.basicConfig(level=logging.ERROR)
 
 
@@ -97,5 +96,3 @@ def login(email, password):
     return access_token
 
 
-if __name__ == '__main__':
-    app.run(port=5000)
